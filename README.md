@@ -7,6 +7,7 @@
 The developer of Device Tool V2.0 is NOT LIABLE for any damage, data loss, device failure, or other consequences resulting from the use of this software.
 
 You use the program AT YOUR OWN RISK. Before executing any commands, ensure you understand their purpose and the potential risks.
+This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
 ---
 
 ## 📦 Download the program
@@ -136,4 +137,4 @@ Run the desired version:
 The developer of Device Tool V2.0 is NOT LIABLE for any damage, data loss, device failure, or other consequences resulting from the use of this software.
 
 You use the program AT YOUR OWN RISK. Before executing any commands, make sure you understand their purpose and possible risks.
-
+This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
