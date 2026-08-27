@@ -1,0 +1,51 @@
+=============================================================
+         Device Tool V2.0
+=============================================================
+
+[1]  Find device
+[2]  Reflashing
+[3]  Firmware update
+[4]  Unlock bootloader
+[5]  Lock bootloader
+[6]  Factory reset (wipe data)
+[7]  Wipe cache partition
+[8]  Reboot to bootloader
+[9]  Reboot to recovery
+[10] Reboot system
+[11] Check device status
+[12] Show device info
+[13] Battery status
+[14] Pull file from device
+[15] Push file to device
+[16] Backup data
+[17] Restore data
+[18] Show logcat
+[19] Check root status
+[20] Enable USB debugging
+[21] Disable USB debugging
+[22] Uninstall app
+[23] Show connected devices
+[24] Check storage space
+[25] Turn off device
+[26] Check Android version
+[27] Check security patch
+[28] Dump system info
+[29] Open CMD (Admin)
+[30] ADB Server Control
+[31] Show installed apps list
+[32] Show system info full
+[33] Browse files (list)
+[34] Delete file on device
+[35] Rename file on device
+[36] Create folder on device
+[37] Reboot to fastbootd
+[38] Reboot to download mode
+[39] Launch scrcpy
+[40] Restart program
+[41] Device diagnostics
+
+-------------------------------------------------------------
+
+[0]  Exit
+
+Select option:
