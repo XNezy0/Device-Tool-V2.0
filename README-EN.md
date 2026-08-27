@@ -11,7 +11,7 @@ You use the program AT YOUR OWN RISK. Before executing any commands, ensure you 
 
 ## 📦 Download the program
 
-Download the latest version: [Device-Tool-V2.0.zip](https://github.com/XNezy0/Device-Tool-V2.0/archive/refs/heads/main.zip)
+Download the latest version: [Device-Tool-V2.0.zip](https://github.com/XNezy0/Device-Tool-V2.0/archive/refs/heads/main.zip).
 
 ## 📁 Project Structure
 
