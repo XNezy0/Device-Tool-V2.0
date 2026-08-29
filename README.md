@@ -9,6 +9,9 @@ The developer of Device Tool V2.1 is NOT LIABLE for any damage, data loss, devic
 You use the program AT YOUR OWN RISK. Before executing any commands, ensure you understand their purpose and the potential risks.
 This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
 ---
+## 📦 Download the program
+
+Download the latest version: [Device-Tool-V2.1.zip](https://github.com/XNezy0/Device-Tool-V2.1/archive/refs/heads/main.zip).
 
 ## 📁 Project Structure
 
