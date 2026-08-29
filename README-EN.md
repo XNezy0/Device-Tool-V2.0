@@ -12,7 +12,7 @@ This tool is intended for advanced users. The author is not responsible for any 
 
 ## 📦 Download the program
 
-Download the latest version: [Device-Tool-V2.0.zip](https://github.com/XNezy0/Device-Tool-V2.0/archive/refs/heads/main.zip).
+Download the latest version: [Device-Tool-V2.1.zip](https://github.com/XNezy0/Device-Tool-V2.1/archive/refs/heads/main.zip).
 
 ## 📁 Project Structure
 
