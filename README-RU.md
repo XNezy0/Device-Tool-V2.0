@@ -49,8 +49,8 @@ Device Tool V2.1/
 ## 🚀 Запуск
 
 Запусти нужную версию:
-- **Device Tool V2.0 EN.bat** — для английского языка
-- **Device Tool V2.0 RU.bat** — для русского языка
+- **Device Tool V2.1 EN.bat** — для английского языка
+- **Device Tool V2.1 RU.bat** — для русского языка
 
 ---
 
