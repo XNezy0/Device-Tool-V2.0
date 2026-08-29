@@ -111,10 +111,8 @@ if errorlevel 1 (
     echo --- DEVICE INFO ---
     echo Model:
     "%~dp0adb\adb" shell getprop ro.product.model
-    echo Name:
-    "%~dp0adb\adb" shell getprop ro.product.marketname
-    "%~dp0adb\adb" shell getprop ro.product.mod_device
-    "%~dp0adb\adb" shell getprop ro.product.displayname
+    echo Device Name:
+    "%~dp0adb\adb" shell settings get global device_name
     echo Build:
     "%~dp0adb\adb" shell getprop ro.build.display.id
     echo Manufacturer:

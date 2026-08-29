@@ -55,6 +55,7 @@ if "%choice%"=="42" goto battery_history
 if "%choice%"=="43" goto running_processes
 goto menu
 
+
 :find
 cls
 echo.
@@ -111,10 +112,8 @@ if errorlevel 1 (
     echo --- ИНФОРМАЦИЯ ОБ УСТРОЙСТВЕ ---
     echo Модель:
     "%~dp0adb\adb" shell getprop ro.product.model
-    echo Название:
-    "%~dp0adb\adb" shell getprop ro.product.marketname
-    "%~dp0adb\adb" shell getprop ro.product.mod_device
-    "%~dp0adb\adb" shell getprop ro.product.displayname
+    echo Имя устройства:
+    "%~dp0adb\adb" shell settings get global device_name
     echo Сборка:
     "%~dp0adb\adb" shell getprop ro.build.display.id
     echo Производитель:
