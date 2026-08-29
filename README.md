@@ -1,10 +1,10 @@
-# Device Tool V2.0
+# Device Tool V2.1
 
-**Device Tool V2.0** is a convenient tool for managing Android devices via ADB and Fastboot. It allows you to perform various operations, from device detection to flashing and file management.
+**Device Tool V2.1** is a convenient tool for managing Android devices via ADB and Fastboot. It allows you to perform various operations, from device detection to flashing and file management.
 ---
 ## ❗ DISCLAIMER
 
-The developer of Device Tool V2.0 is NOT LIABLE for any damage, data loss, device failure, or other consequences resulting from the use of this software.
+The developer of Device Tool V2.1 is NOT LIABLE for any damage, data loss, device failure, or other consequences resulting from the use of this software.
 
 You use the program AT YOUR OWN RISK. Before executing any commands, ensure you understand their purpose and the potential risks.
 This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
@@ -17,10 +17,10 @@ Download the latest version: [Device-Tool-V2.0.zip](https://github.com/XNezy0/De
 ## 📁 Project Structure
 
 ```
-Device Tool V2.0/
+Device Tool V2.1/
 │
-├── Device Tool V2.0 EN.bat # English version
-├── Device Tool V2.0 RU.bat # Russian version
+├── Device Tool V2.1 EN.bat # English version
+├── Device Tool V2.1 RU.bat # Russian version
 │
 ├── adb/ # ADB and Fastboot
 │ ├── adb.exe
@@ -100,6 +100,8 @@ Run the desired version:
 | 39 | Launch scrcpy | Launch scrcpy (PC control) |
 | 40 | Restart program | Restart the program |
 | 41 | Device diagnostics | **Full device diagnostics** |
+| 42 | Battery history | **Show battery charge history** |
+| 43 | Running processes | **List running processes** |
 
 ---
 
@@ -134,7 +136,11 @@ Run the desired version:
 
 ## ❗ DISCLAIMER
 
-The developer of Device Tool V2.0 is NOT LIABLE for any damage, data loss, device failure, or other consequences resulting from the use of this software.
+The developer of Device Tool V2.1 is NOT LIABLE for any damage, data loss, device failure, or other consequences resulting from the use of this software.
 
 You use the program AT YOUR OWN RISK. Before executing any commands, make sure you understand their purpose and possible risks.
+<<<<<<< HEAD
 This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
+=======
+This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
+>>>>>>> f98ad260727ed027841ac1fad39698155655ab02
