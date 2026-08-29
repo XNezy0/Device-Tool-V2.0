@@ -10,10 +10,6 @@ You use the program AT YOUR OWN RISK. Before executing any commands, ensure you 
 This tool is intended for advanced users. The author is not responsible for any damage to devices or data loss resulting from its use. Please read the documentation before use.
 ---
 
-## 📦 Download the program
-
-Download the latest version: [Device-Tool-V2.0.zip](https://github.com/XNezy0/Device-Tool-V2.0/archive/refs/heads/main.zip).
-
 ## 📁 Project Structure
 
 ```
