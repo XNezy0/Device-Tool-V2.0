@@ -11,7 +11,7 @@
 ---
 ## 📦 Скачать программу
 
-Скачать последнюю версию: [Device-Tool-V2.0.zip](https://github.com/XNezy0/Device-Tool-V2.1/archive/refs/heads/main.zip)
+Скачать последнюю версию: [Device-Tool-V2.1.zip](https://github.com/XNezy0/Device-Tool-V2.1/archive/refs/heads/main.zip)
 
 ## 📁 Структура проекта
 
