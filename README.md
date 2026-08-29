@@ -49,8 +49,8 @@ Device Tool V2.1/
 ## 🚀 Launch
 
 Run the desired version:
-- **Device Tool V2.0 EN.bat** — for English
-- **Device Tool V2.0 RU.bat** — for Russian Language
+- **Device Tool V2.1 EN.bat** — for English
+- **Device Tool V2.1 RU.bat** — for Russian Language
 
 ---
 
