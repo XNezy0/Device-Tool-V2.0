@@ -13,6 +13,10 @@ This tool is intended for advanced users. The author is not responsible for any 
 
 Download the latest version: [Device-Tool-V2.1.zip](https://github.com/XNezy0/Device-Tool-V2.1/archive/refs/heads/main.zip).
 
+## 💫 DTV2.2 Relized!!!
+**Announcement of the new version of DTV2.2!**
+**Check out the releases!**
+
 ## 📁 Project Structure
 
 ```
