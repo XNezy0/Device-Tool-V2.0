@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Device Tool V2.0
+title Device Tool V2.1
 color 0A
 cls
 
@@ -9,7 +9,7 @@ cls
 type lang\en.txt
 set /p choice=
 
-if "%choice%"=="0" exit
+if "%choice%"=="0" goto exit_cleanup
 if "%choice%"=="1" goto find
 if "%choice%"=="2" goto reflash
 if "%choice%"=="3" goto update
@@ -51,6 +51,8 @@ if "%choice%"=="38" goto downloadmode
 if "%choice%"=="39" goto launchscrcpy
 if "%choice%"=="40" goto restart
 if "%choice%"=="41" goto diagnostics
+if "%choice%"=="42" goto battery_history
+if "%choice%"=="43" goto running_processes
 goto menu
 
 :find
@@ -60,7 +62,7 @@ echo Searching for devices...
 echo.
 echo [15 seconds timeout]
 echo.
-adb\adb devices > temp\devices.txt
+"%~dp0adb\adb" devices > temp\devices.txt
 set /a count=0
 :loop
 cls
@@ -106,6 +108,18 @@ if errorlevel 1 (
     echo.
     type temp\devices.txt
     echo.
+    echo --- DEVICE INFO ---
+    echo Model:
+    "%~dp0adb\adb" shell getprop ro.product.model
+    echo Name:
+    "%~dp0adb\adb" shell getprop ro.product.marketname
+    "%~dp0adb\adb" shell getprop ro.product.mod_device
+    "%~dp0adb\adb" shell getprop ro.product.displayname
+    echo Build:
+    "%~dp0adb\adb" shell getprop ro.build.display.id
+    echo Manufacturer:
+    "%~dp0adb\adb" shell getprop ro.product.manufacturer
+    echo.
     del temp\devices.txt >nul 2>nul
     pause
     goto menu
@@ -125,7 +139,7 @@ set /p confirm=Type YES to continue:
 if /i not "%confirm%"=="YES" goto menu
 echo.
 echo Reflashing device...
-adb\fastboot flash all files\firmware.zip
+"%~dp0adb\fastboot" flash all files\firmware.zip
 echo.
 pause
 goto menu
@@ -134,7 +148,7 @@ goto menu
 cls
 echo.
 echo Updating firmware...
-adb\adb sideload files\firmware.zip
+"%~dp0adb\adb" sideload files\firmware.zip
 echo.
 pause
 goto menu
@@ -153,7 +167,7 @@ set /p confirm=Type YES to continue:
 if /i not "%confirm%"=="YES" goto menu
 echo.
 echo Unlocking bootloader...
-adb\fastboot oem unlock
+"%~dp0adb\fastboot" oem unlock
 echo.
 pause
 goto menu
@@ -172,7 +186,7 @@ set /p confirm=Type YES to continue:
 if /i not "%confirm%"=="YES" goto menu
 echo.
 echo Locking bootloader...
-adb\fastboot oem lock
+"%~dp0adb\fastboot" oem lock
 echo.
 pause
 goto menu
@@ -190,7 +204,7 @@ set /p confirm=Type YES to continue:
 if /i not "%confirm%"=="YES" goto menu
 echo.
 echo Factory resetting...
-adb\fastboot -w
+"%~dp0adb\fastboot" -w
 echo.
 pause
 goto menu
@@ -199,7 +213,7 @@ goto menu
 cls
 echo.
 echo Wiping cache partition...
-adb\fastboot erase cache
+"%~dp0adb\fastboot" erase cache
 echo.
 pause
 goto menu
@@ -208,7 +222,7 @@ goto menu
 cls
 echo.
 echo Rebooting to bootloader...
-adb\adb reboot bootloader
+"%~dp0adb\adb" reboot bootloader
 echo.
 pause
 goto menu
@@ -217,7 +231,7 @@ goto menu
 cls
 echo.
 echo Rebooting to recovery...
-adb\adb reboot recovery
+"%~dp0adb\adb" reboot recovery
 echo.
 pause
 goto menu
@@ -226,7 +240,7 @@ goto menu
 cls
 echo.
 echo Rebooting system...
-adb\adb reboot
+"%~dp0adb\adb" reboot
 echo.
 pause
 goto menu
@@ -235,7 +249,7 @@ goto menu
 cls
 echo.
 echo Checking device status...
-adb\fastboot oem device-info
+"%~dp0adb\fastboot" oem device-info
 echo.
 pause
 goto menu
@@ -245,10 +259,10 @@ cls
 echo.
 echo Device info:
 echo.
-adb\adb shell getprop ro.product.model
-adb\adb shell getprop ro.product.manufacturer
-adb\adb shell getprop ro.build.version.release
-adb\adb shell getprop ro.serialno
+"%~dp0adb\adb" shell getprop ro.product.model
+"%~dp0adb\adb" shell getprop ro.product.manufacturer
+"%~dp0adb\adb" shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.serialno
 echo.
 pause
 goto menu
@@ -258,7 +272,7 @@ cls
 echo.
 echo Battery status:
 echo.
-adb\adb shell dumpsys battery
+"%~dp0adb\adb" shell dumpsys battery
 echo.
 pause
 goto menu
@@ -269,7 +283,7 @@ echo.
 echo Pulling file from device...
 echo.
 set /p filepath=Enter file path on device (e.g. /sdcard/Download/file.txt): 
-adb\adb pull "%filepath%" files\
+"%~dp0adb\adb" pull "%filepath%" files\
 echo.
 pause
 goto menu
@@ -280,7 +294,7 @@ echo.
 echo Pushing file to device...
 echo.
 set /p filename=Enter filename from files folder: 
-adb\adb push files\%filename% /sdcard/
+"%~dp0adb\adb" push files\%filename% /sdcard/
 echo.
 pause
 goto menu
@@ -290,7 +304,7 @@ cls
 echo.
 echo Creating backup...
 echo.
-adb\adb backup -apk -shared -all -system -f files\backup.ab
+"%~dp0adb\adb" backup -apk -shared -all -system -f files\backup.ab
 echo.
 pause
 goto menu
@@ -299,7 +313,7 @@ goto menu
 cls
 echo.
 echo Restoring backup...
-adb\adb restore files\backup.ab
+"%~dp0adb\adb" restore files\backup.ab
 echo.
 pause
 goto menu
@@ -308,7 +322,7 @@ goto menu
 cls
 echo.
 echo Saving logcat...
-adb\adb logcat -d > logs\logcat.txt
+"%~dp0adb\adb" logcat -d > logs\logcat.txt
 type logs\logcat.txt
 echo.
 pause
@@ -318,7 +332,7 @@ goto menu
 cls
 echo.
 echo Checking root status...
-adb\adb shell su -c "echo Root access available" 2>nul
+"%~dp0adb\adb" shell su -c "echo Root access available" 2>nul
 if errorlevel 1 echo No root access
 echo.
 pause
@@ -328,7 +342,7 @@ goto menu
 cls
 echo.
 echo Enabling USB debugging...
-adb\adb shell settings put global adb_enabled 1
+"%~dp0adb\adb" shell settings put global adb_enabled 1
 echo.
 pause
 goto menu
@@ -337,7 +351,7 @@ goto menu
 cls
 echo.
 echo Disabling USB debugging...
-adb\adb shell settings put global adb_enabled 0
+"%~dp0adb\adb" shell settings put global adb_enabled 0
 echo.
 pause
 goto menu
@@ -348,7 +362,7 @@ echo.
 echo Uninstalling app...
 echo.
 set /p package=Enter package name (e.g. com.example.app): 
-adb\adb uninstall %package%
+"%~dp0adb\adb" uninstall %package%
 echo.
 pause
 goto menu
@@ -357,7 +371,7 @@ goto menu
 cls
 echo.
 echo Connected devices:
-adb\adb devices
+"%~dp0adb\adb" devices
 echo.
 pause
 goto menu
@@ -366,7 +380,7 @@ goto menu
 cls
 echo.
 echo Storage space:
-adb\adb shell df -h
+"%~dp0adb\adb" shell df -h
 echo.
 pause
 goto menu
@@ -375,7 +389,7 @@ goto menu
 cls
 echo.
 echo Turning off device...
-adb\adb shell reboot -p
+"%~dp0adb\adb" shell reboot -p
 echo.
 pause
 goto menu
@@ -384,7 +398,7 @@ goto menu
 cls
 echo.
 echo Android version:
-adb\adb shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.build.version.release
 echo.
 pause
 goto menu
@@ -393,7 +407,7 @@ goto menu
 cls
 echo.
 echo Security patch:
-adb\adb shell getprop ro.build.version.security_patch
+"%~dp0adb\adb" shell getprop ro.build.version.security_patch
 echo.
 pause
 goto menu
@@ -402,7 +416,7 @@ goto menu
 cls
 echo.
 echo System info:
-adb\adb shell getprop
+"%~dp0adb\adb" shell getprop
 echo.
 pause
 goto menu
@@ -430,14 +444,14 @@ set /p adbchoice=Select option:
 if "%adbchoice%"=="1" (
     echo.
     echo Killing ADB server...
-    adb\adb kill-server
+    "%~dp0adb\adb" kill-server
     echo.
     pause
 )
 if "%adbchoice%"=="2" (
     echo.
     echo Starting ADB server...
-    adb\adb start-server
+    "%~dp0adb\adb" start-server
     echo.
     pause
 )
@@ -450,7 +464,7 @@ echo =============================================
 echo          INSTALLED APPS LIST
 echo =============================================
 echo.
-adb\adb shell pm list packages
+"%~dp0adb\adb" shell pm list packages
 echo.
 pause
 goto menu
@@ -463,20 +477,20 @@ echo          FULL SYSTEM INFO
 echo =============================================
 echo.
 echo --- Device Info ---
-adb\adb shell getprop ro.product.model
-adb\adb shell getprop ro.product.manufacturer
-adb\adb shell getprop ro.build.version.release
-adb\adb shell getprop ro.build.version.security_patch
-adb\adb shell getprop ro.serialno
+"%~dp0adb\adb" shell getprop ro.product.model
+"%~dp0adb\adb" shell getprop ro.product.manufacturer
+"%~dp0adb\adb" shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.build.version.security_patch
+"%~dp0adb\adb" shell getprop ro.serialno
 echo.
 echo --- IMEI ---
-adb\adb shell service call iphonesubinfo 1
+"%~dp0adb\adb" shell service call iphonesubinfo 1
 echo.
 echo --- MAC Address ---
-adb\adb shell cat /sys/class/net/wlan0/address
+"%~dp0adb\adb" shell cat /sys/class/net/wlan0/address
 echo.
 echo --- Bootloader Status ---
-adb\adb shell getprop ro.boot.flash.locked
+"%~dp0adb\adb" shell getprop ro.boot.flash.locked
 echo.
 pause
 goto menu
@@ -491,7 +505,7 @@ echo.
 set /p dirpath=Enter folder path (e.g. /sdcard/Download/): 
 echo.
 echo Listing files in %dirpath%:
-adb\adb shell ls -la "%dirpath%"
+"%~dp0adb\adb" shell ls -la "%dirpath%"
 echo.
 pause
 goto menu
@@ -506,7 +520,7 @@ echo.
 set /p filepath=Enter full path to file: 
 echo.
 echo Deleting %filepath%...
-adb\adb shell rm "%filepath%"
+"%~dp0adb\adb" shell rm "%filepath%"
 if errorlevel 1 (
     echo Error deleting file.
 ) else (
@@ -527,7 +541,7 @@ set /p oldpath=Enter current full path:
 set /p newpath=Enter new full path: 
 echo.
 echo Renaming...
-adb\adb shell mv "%oldpath%" "%newpath%"
+"%~dp0adb\adb" shell mv "%oldpath%" "%newpath%"
 if errorlevel 1 (
     echo Error renaming.
 ) else (
@@ -547,7 +561,7 @@ echo.
 set /p folderpath=Enter full path for new folder: 
 echo.
 echo Creating %folderpath%...
-adb\adb shell mkdir "%folderpath%"
+"%~dp0adb\adb" shell mkdir "%folderpath%"
 if errorlevel 1 (
     echo Error creating folder.
 ) else (
@@ -561,7 +575,7 @@ goto menu
 cls
 echo.
 echo Rebooting to fastbootd...
-adb\adb reboot fastboot
+"%~dp0adb\adb" reboot fastboot
 echo.
 pause
 goto menu
@@ -570,7 +584,7 @@ goto menu
 cls
 echo.
 echo Rebooting to Download Mode...
-adb\adb reboot download
+"%~dp0adb\adb" reboot download
 echo.
 pause
 goto menu
@@ -602,7 +616,7 @@ echo =============================================
 echo          RESTARTING PROGRAM
 echo =============================================
 echo.
-echo Restarting Device Tool V2.0...
+echo Restarting Device Tool V2.1...
 timeout /t 2 >nul
 start "" "%~f0"
 exit
@@ -619,129 +633,129 @@ echo.
 
 echo --- DEVICE INFO ---
 echo Model:
-adb\adb shell getprop ro.product.model
+"%~dp0adb\adb" shell getprop ro.product.model
 echo Manufacturer:
-adb\adb shell getprop ro.product.manufacturer
+"%~dp0adb\adb" shell getprop ro.product.manufacturer
 echo Android Version:
-adb\adb shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.build.version.release
 echo Security Patch:
-adb\adb shell getprop ro.build.version.security_patch
+"%~dp0adb\adb" shell getprop ro.build.version.security_patch
 echo Serial Number:
-adb\adb shell getprop ro.serialno
+"%~dp0adb\adb" shell getprop ro.serialno
 echo.
 
 echo --- CPU INFO ---
 echo CPU Architecture:
-adb\adb shell getprop ro.product.cpu.abi
+"%~dp0adb\adb" shell getprop ro.product.cpu.abi
 echo CPU Cores:
-adb\adb shell cat /sys/devices/system/cpu/present
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/present
 echo CPU Governor:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo CPU Current Frequency:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 echo CPU Min Frequency:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
 echo CPU Max Frequency:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 echo.
 
 echo --- TEMPERATURE ---
 echo Battery Temperature:
-adb\adb shell dumpsys battery | findstr "temperature"
+"%~dp0adb\adb" shell dumpsys battery | findstr "temperature"
 echo CPU Temperature:
-adb\adb shell cat /sys/class/thermal/thermal_zone0/temp 2>nul
-adb\adb shell cat /sys/class/thermal/thermal_zone1/temp 2>nul
-adb\adb shell cat /sys/class/thermal/thermal_zone2/temp 2>nul
+"%~dp0adb\adb" shell cat /sys/class/thermal/thermal_zone0/temp 2>nul
+"%~dp0adb\adb" shell cat /sys/class/thermal/thermal_zone1/temp 2>nul
+"%~dp0adb\adb" shell cat /sys/class/thermal/thermal_zone2/temp 2>nul
 echo.
 
 echo --- BATTERY INFO ---
 echo Level:
-adb\adb shell dumpsys battery | findstr "level"
+"%~dp0adb\adb" shell dumpsys battery | findstr "level"
 echo Scale:
-adb\adb shell dumpsys battery | findstr "scale"
+"%~dp0adb\adb" shell dumpsys battery | findstr "scale"
 echo Status:
-adb\adb shell dumpsys battery | findstr "status"
+"%~dp0adb\adb" shell dumpsys battery | findstr "status"
 echo Health:
-adb\adb shell dumpsys battery | findstr "health"
+"%~dp0adb\adb" shell dumpsys battery | findstr "health"
 echo Present:
-adb\adb shell dumpsys battery | findstr "present"
+"%~dp0adb\adb" shell dumpsys battery | findstr "present"
 echo Voltage:
-adb\adb shell dumpsys battery | findstr "voltage"
+"%~dp0adb\adb" shell dumpsys battery | findstr "voltage"
 echo Technology:
-adb\adb shell dumpsys battery | findstr "technology"
+"%~dp0adb\adb" shell dumpsys battery | findstr "technology"
 echo AC Powered:
-adb\adb shell dumpsys battery | findstr "AC powered"
+"%~dp0adb\adb" shell dumpsys battery | findstr "AC powered"
 echo USB Powered:
-adb\adb shell dumpsys battery | findstr "USB powered"
+"%~dp0adb\adb" shell dumpsys battery | findstr "USB powered"
 echo Wireless Powered:
-adb\adb shell dumpsys battery | findstr "Wireless powered"
+"%~dp0adb\adb" shell dumpsys battery | findstr "Wireless powered"
 echo.
 
 echo --- MEMORY (RAM) INFO ---
 echo Total RAM:
-adb\adb shell free -h | findstr "Mem:"
-adb\adb shell dumpsys meminfo | findstr "Total RAM"
+"%~dp0adb\adb" shell free -h | findstr "Mem:"
+"%~dp0adb\adb" shell dumpsys meminfo | findstr "Total RAM"
 echo Available RAM:
-adb\adb shell dumpsys meminfo | findstr "Free RAM"
+"%~dp0adb\adb" shell dumpsys meminfo | findstr "Free RAM"
 echo.
 
 echo --- STORAGE INFO ---
 echo Internal Storage:
-adb\adb shell df -h /data
+"%~dp0adb\adb" shell df -h /data
 echo System Storage:
-adb\adb shell df -h /system
+"%~dp0adb\adb" shell df -h /system
 echo Cache Storage:
-adb\adb shell df -h /cache
+"%~dp0adb\adb" shell df -h /cache
 echo.
 
 echo --- DISPLAY INFO ---
 echo Resolution:
-adb\adb shell wm size
+"%~dp0adb\adb" shell wm size
 echo Density:
-adb\adb shell wm density
+"%~dp0adb\adb" shell wm density
 echo.
 
 echo --- NETWORK INFO ---
 echo Wi-Fi SSID:
-adb\adb shell dumpsys wifi | findstr "SSID"
+"%~dp0adb\adb" shell dumpsys wifi | findstr "SSID"
 echo Wi-Fi Signal:
-adb\adb shell dumpsys wifi | findstr "signalStrength"
+"%~dp0adb\adb" shell dumpsys wifi | findstr "signalStrength"
 echo IP Address:
-adb\adb shell ip -f inet addr show wlan0
+"%~dp0adb\adb" shell ip -f inet addr show wlan0
 echo MAC Address:
-adb\adb shell cat /sys/class/net/wlan0/address
+"%~dp0adb\adb" shell cat /sys/class/net/wlan0/address
 echo.
 
 echo --- BLUETOOTH INFO ---
 echo Bluetooth Status:
-adb\adb shell settings get global bluetooth_on
+"%~dp0adb\adb" shell settings get global bluetooth_on
 echo.
 
 echo --- SYSTEM STATUS ---
 echo Bootloader Status:
-adb\adb shell getprop ro.boot.flash.locked
+"%~dp0adb\adb" shell getprop ro.boot.flash.locked
 echo USB Debugging:
-adb\adb shell settings get global adb_enabled
+"%~dp0adb\adb" shell settings get global adb_enabled
 echo Root Status:
-adb\adb shell su -c "echo Root available" 2>nul
+"%~dp0adb\adb" shell su -c "echo Root available" 2>nul
 if errorlevel 1 echo No root access
 echo.
 
 echo --- SENSORS ---
 echo Accelerometer:
-adb\adb shell dumpsys sensorservice | findstr "Accelerometer"
+"%~dp0adb\adb" shell dumpsys sensorservice | findstr "Accelerometer"
 echo Gyroscope:
-adb\adb shell dumpsys sensorservice | findstr "Gyroscope"
+"%~dp0adb\adb" shell dumpsys sensorservice | findstr "Gyroscope"
 echo.
 
 echo --- CAMERA INFO ---
 echo Camera Count:
-adb\adb shell dumpsys media.camera | findstr "Number of cameras"
+"%~dp0adb\adb" shell dumpsys media.camera | findstr "Number of cameras"
 echo.
 
 echo --- AUDIO INFO ---
 echo Audio Status:
-adb\adb shell dumpsys audio | findstr "mIsConnected"
+"%~dp0adb\adb" shell dumpsys audio | findstr "mIsConnected"
 echo.
 
 echo =============================================
@@ -750,3 +764,50 @@ echo =============================================
 echo.
 pause
 goto menu
+
+:battery_history
+cls
+echo.
+echo =============================================
+echo          BATTERY HISTORY
+echo =============================================
+echo.
+echo Loading battery history...
+echo.
+"%~dp0adb\adb" shell dumpsys batterystats
+echo.
+pause
+goto menu
+
+:running_processes
+cls
+echo.
+echo =============================================
+echo          RUNNING PROCESSES
+echo =============================================
+echo.
+echo List of running processes:
+echo.
+"%~dp0adb\adb" shell top -n 1
+color 0A
+echo.
+pause
+goto menu
+
+:exit_cleanup
+cls
+echo.
+echo =============================================
+echo          EXITING PROGRAM
+echo =============================================
+echo.
+echo Cleaning temporary files...
+if exist "temp\*.*" (
+    echo Deleting files from temp folder...
+    del /q temp\*.* 2>nul
+    echo Done.
+)
+echo.
+echo Exiting Device Tool V2.1...
+timeout /t 2 >nul
+exit

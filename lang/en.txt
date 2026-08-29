@@ -43,6 +43,8 @@
 [39] Launch scrcpy
 [40] Restart program
 [41] Device diagnostics
+[42] Battery history
+[43] Running processes
 
 -------------------------------------------------------------
 

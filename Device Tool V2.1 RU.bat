@@ -1,6 +1,6 @@
 @echo off
 chcp 65001 >nul
-title Device Tool V2.0
+title Device Tool V2.1
 color 0A
 cls
 
@@ -9,7 +9,7 @@ cls
 type lang\ru.txt
 set /p choice=
 
-if "%choice%"=="0" exit
+if "%choice%"=="0" goto exit_cleanup
 if "%choice%"=="1" goto find
 if "%choice%"=="2" goto reflash
 if "%choice%"=="3" goto update
@@ -51,6 +51,8 @@ if "%choice%"=="38" goto downloadmode
 if "%choice%"=="39" goto launchscrcpy
 if "%choice%"=="40" goto restart
 if "%choice%"=="41" goto diagnostics
+if "%choice%"=="42" goto battery_history
+if "%choice%"=="43" goto running_processes
 goto menu
 
 :find
@@ -60,7 +62,7 @@ echo Поиск устройств...
 echo.
 echo [15 секунд]
 echo.
-adb\adb devices > temp\devices.txt
+"%~dp0adb\adb" devices > temp\devices.txt
 set /a count=0
 :loop
 cls
@@ -106,6 +108,18 @@ if errorlevel 1 (
     echo.
     type temp\devices.txt
     echo.
+    echo --- ИНФОРМАЦИЯ ОБ УСТРОЙСТВЕ ---
+    echo Модель:
+    "%~dp0adb\adb" shell getprop ro.product.model
+    echo Название:
+    "%~dp0adb\adb" shell getprop ro.product.marketname
+    "%~dp0adb\adb" shell getprop ro.product.mod_device
+    "%~dp0adb\adb" shell getprop ro.product.displayname
+    echo Сборка:
+    "%~dp0adb\adb" shell getprop ro.build.display.id
+    echo Производитель:
+    "%~dp0adb\adb" shell getprop ro.product.manufacturer
+    echo.
     del temp\devices.txt >nul 2>nul
     pause
     goto menu
@@ -125,7 +139,7 @@ set /p confirm=Введите ДА для продолжения:
 if /i not "%confirm%"=="ДА" goto menu
 echo.
 echo Перепрошивка...
-adb\fastboot flash all files\firmware.zip
+"%~dp0adb\fastboot" flash all files\firmware.zip
 echo.
 pause
 goto menu
@@ -134,7 +148,7 @@ goto menu
 cls
 echo.
 echo Обновление прошивки...
-adb\adb sideload files\firmware.zip
+"%~dp0adb\adb" sideload files\firmware.zip
 echo.
 pause
 goto menu
@@ -153,7 +167,7 @@ set /p confirm=Введите ДА для продолжения:
 if /i not "%confirm%"=="ДА" goto menu
 echo.
 echo Разблокировка загрузчика...
-adb\fastboot oem unlock
+"%~dp0adb\fastboot" oem unlock
 echo.
 pause
 goto menu
@@ -172,7 +186,7 @@ set /p confirm=Введите ДА для продолжения:
 if /i not "%confirm%"=="ДА" goto menu
 echo.
 echo Блокировка загрузчика...
-adb\fastboot oem lock
+"%~dp0adb\fastboot" oem lock
 echo.
 pause
 goto menu
@@ -190,7 +204,7 @@ set /p confirm=Введите ДА для продолжения:
 if /i not "%confirm%"=="ДА" goto menu
 echo.
 echo Сброс...
-adb\fastboot -w
+"%~dp0adb\fastboot" -w
 echo.
 pause
 goto menu
@@ -199,7 +213,7 @@ goto menu
 cls
 echo.
 echo Очистка раздела кэша...
-adb\fastboot erase cache
+"%~dp0adb\fastboot" erase cache
 echo.
 pause
 goto menu
@@ -208,7 +222,7 @@ goto menu
 cls
 echo.
 echo Перезагрузка в bootloader...
-adb\adb reboot bootloader
+"%~dp0adb\adb" reboot bootloader
 echo.
 pause
 goto menu
@@ -217,7 +231,7 @@ goto menu
 cls
 echo.
 echo Перезагрузка в recovery...
-adb\adb reboot recovery
+"%~dp0adb\adb" reboot recovery
 echo.
 pause
 goto menu
@@ -226,7 +240,7 @@ goto menu
 cls
 echo.
 echo Перезагрузка системы...
-adb\adb reboot
+"%~dp0adb\adb" reboot
 echo.
 pause
 goto menu
@@ -235,7 +249,7 @@ goto menu
 cls
 echo.
 echo Проверка статуса устройства...
-adb\fastboot oem device-info
+"%~dp0adb\fastboot" oem device-info
 echo.
 pause
 goto menu
@@ -245,10 +259,10 @@ cls
 echo.
 echo Информация об устройстве:
 echo.
-adb\adb shell getprop ro.product.model
-adb\adb shell getprop ro.product.manufacturer
-adb\adb shell getprop ro.build.version.release
-adb\adb shell getprop ro.serialno
+"%~dp0adb\adb" shell getprop ro.product.model
+"%~dp0adb\adb" shell getprop ro.product.manufacturer
+"%~dp0adb\adb" shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.serialno
 echo.
 pause
 goto menu
@@ -258,7 +272,7 @@ cls
 echo.
 echo Статус батареи:
 echo.
-adb\adb shell dumpsys battery
+"%~dp0adb\adb" shell dumpsys battery
 echo.
 pause
 goto menu
@@ -269,7 +283,7 @@ echo.
 echo Вытащить файл с устройства...
 echo.
 set /p filepath=Введите путь к файлу (например /sdcard/Download/file.txt): 
-adb\adb pull "%filepath%" files\
+"%~dp0adb\adb" pull "%filepath%" files\
 echo.
 pause
 goto menu
@@ -280,7 +294,7 @@ echo.
 echo Закинуть файл на устройство...
 echo.
 set /p filename=Введите имя файла из папки files: 
-adb\adb push files\%filename% /sdcard/
+"%~dp0adb\adb" push files\%filename% /sdcard/
 echo.
 pause
 goto menu
@@ -290,7 +304,7 @@ cls
 echo.
 echo Создание бэкапа...
 echo.
-adb\adb backup -apk -shared -all -system -f files\backup.ab
+"%~dp0adb\adb" backup -apk -shared -all -system -f files\backup.ab
 echo.
 pause
 goto menu
@@ -299,7 +313,7 @@ goto menu
 cls
 echo.
 echo Восстановление бэкапа...
-adb\adb restore files\backup.ab
+"%~dp0adb\adb" restore files\backup.ab
 echo.
 pause
 goto menu
@@ -308,7 +322,7 @@ goto menu
 cls
 echo.
 echo Сохранение логов...
-adb\adb logcat -d > logs\logcat.txt
+"%~dp0adb\adb" logcat -d > logs\logcat.txt
 type logs\logcat.txt
 echo.
 pause
@@ -318,7 +332,7 @@ goto menu
 cls
 echo.
 echo Проверка root...
-adb\adb shell su -c "echo Root access available" 2>nul
+"%~dp0adb\adb" shell su -c "echo Root access available" 2>nul
 if errorlevel 1 echo Нет root доступа
 echo.
 pause
@@ -328,7 +342,7 @@ goto menu
 cls
 echo.
 echo Включение USB-отладки...
-adb\adb shell settings put global adb_enabled 1
+"%~dp0adb\adb" shell settings put global adb_enabled 1
 echo.
 pause
 goto menu
@@ -337,7 +351,7 @@ goto menu
 cls
 echo.
 echo Выключение USB-отладки...
-adb\adb shell settings put global adb_enabled 0
+"%~dp0adb\adb" shell settings put global adb_enabled 0
 echo.
 pause
 goto menu
@@ -348,7 +362,7 @@ echo.
 echo Удаление приложения...
 echo.
 set /p package=Введите имя пакета (например com.example.app): 
-adb\adb uninstall %package%
+"%~dp0adb\adb" uninstall %package%
 echo.
 pause
 goto menu
@@ -357,7 +371,7 @@ goto menu
 cls
 echo.
 echo Подключённые устройства:
-adb\adb devices
+"%~dp0adb\adb" devices
 echo.
 pause
 goto menu
@@ -366,7 +380,7 @@ goto menu
 cls
 echo.
 echo Свободное место:
-adb\adb shell df -h
+"%~dp0adb\adb" shell df -h
 echo.
 pause
 goto menu
@@ -375,7 +389,7 @@ goto menu
 cls
 echo.
 echo Выключение устройства...
-adb\adb shell reboot -p
+"%~dp0adb\adb" shell reboot -p
 echo.
 pause
 goto menu
@@ -384,7 +398,7 @@ goto menu
 cls
 echo.
 echo Версия Android:
-adb\adb shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.build.version.release
 echo.
 pause
 goto menu
@@ -393,7 +407,7 @@ goto menu
 cls
 echo.
 echo Патч безопасности:
-adb\adb shell getprop ro.build.version.security_patch
+"%~dp0adb\adb" shell getprop ro.build.version.security_patch
 echo.
 pause
 goto menu
@@ -402,7 +416,7 @@ goto menu
 cls
 echo.
 echo Информация о системе:
-adb\adb shell getprop
+"%~dp0adb\adb" shell getprop
 echo.
 pause
 goto menu
@@ -430,14 +444,14 @@ set /p adbchoice=Выберите опцию:
 if "%adbchoice%"=="1" (
     echo.
     echo Остановка ADB сервера...
-    adb\adb kill-server
+    "%~dp0adb\adb" kill-server
     echo.
     pause
 )
 if "%adbchoice%"=="2" (
     echo.
     echo Запуск ADB сервера...
-    adb\adb start-server
+    "%~dp0adb\adb" start-server
     echo.
     pause
 )
@@ -450,7 +464,7 @@ echo =============================================
 echo          СПИСОК УСТАНОВЛЕННЫХ ПРИЛОЖЕНИЙ
 echo =============================================
 echo.
-adb\adb shell pm list packages
+"%~dp0adb\adb" shell pm list packages
 echo.
 pause
 goto menu
@@ -463,20 +477,20 @@ echo          ПОЛНАЯ ИНФОРМАЦИЯ ОБ УСТРОЙСТВЕ
 echo =============================================
 echo.
 echo --- Информация об устройстве ---
-adb\adb shell getprop ro.product.model
-adb\adb shell getprop ro.product.manufacturer
-adb\adb shell getprop ro.build.version.release
-adb\adb shell getprop ro.build.version.security_patch
-adb\adb shell getprop ro.serialno
+"%~dp0adb\adb" shell getprop ro.product.model
+"%~dp0adb\adb" shell getprop ro.product.manufacturer
+"%~dp0adb\adb" shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.build.version.security_patch
+"%~dp0adb\adb" shell getprop ro.serialno
 echo.
 echo --- IMEI ---
-adb\adb shell service call iphonesubinfo 1
+"%~dp0adb\adb" shell service call iphonesubinfo 1
 echo.
 echo --- MAC-адрес ---
-adb\adb shell cat /sys/class/net/wlan0/address
+"%~dp0adb\adb" shell cat /sys/class/net/wlan0/address
 echo.
 echo --- Статус загрузчика ---
-adb\adb shell getprop ro.boot.flash.locked
+"%~dp0adb\adb" shell getprop ro.boot.flash.locked
 echo.
 pause
 goto menu
@@ -491,7 +505,7 @@ echo.
 set /p dirpath=Введите путь к папке (например /sdcard/Download/): 
 echo.
 echo Список файлов в %dirpath%:
-adb\adb shell ls -la "%dirpath%"
+"%~dp0adb\adb" shell ls -la "%dirpath%"
 echo.
 pause
 goto menu
@@ -506,7 +520,7 @@ echo.
 set /p filepath=Введите полный путь к файлу: 
 echo.
 echo Удаление %filepath%...
-adb\adb shell rm "%filepath%"
+"%~dp0adb\adb" shell rm "%filepath%"
 if errorlevel 1 (
     echo Ошибка при удалении файла.
 ) else (
@@ -527,7 +541,7 @@ set /p oldpath=Введите текущий полный путь:
 set /p newpath=Введите новый полный путь: 
 echo.
 echo Переименование...
-adb\adb shell mv "%oldpath%" "%newpath%"
+"%~dp0adb\adb" shell mv "%oldpath%" "%newpath%"
 if errorlevel 1 (
     echo Ошибка при переименовании.
 ) else (
@@ -547,7 +561,7 @@ echo.
 set /p folderpath=Введите полный путь для новой папки: 
 echo.
 echo Создание %folderpath%...
-adb\adb shell mkdir "%folderpath%"
+"%~dp0adb\adb" shell mkdir "%folderpath%"
 if errorlevel 1 (
     echo Ошибка при создании папки.
 ) else (
@@ -561,7 +575,7 @@ goto menu
 cls
 echo.
 echo Перезагрузка в fastbootd...
-adb\adb reboot fastboot
+"%~dp0adb\adb" reboot fastboot
 echo.
 pause
 goto menu
@@ -570,7 +584,7 @@ goto menu
 cls
 echo.
 echo Перезагрузка в режим загрузки...
-adb\adb reboot download
+"%~dp0adb\adb" reboot download
 echo.
 pause
 goto menu
@@ -602,7 +616,7 @@ echo =============================================
 echo          ПЕРЕЗАПУСК ПРОГРАММЫ
 echo =============================================
 echo.
-echo Перезапуск Device Tool V2.0...
+echo Перезапуск Device Tool V2.1...
 timeout /t 2 >nul
 start "" "%~f0"
 exit
@@ -619,129 +633,129 @@ echo.
 
 echo --- ИНФОРМАЦИЯ ОБ УСТРОЙСТВЕ ---
 echo Модель:
-adb\adb shell getprop ro.product.model
+"%~dp0adb\adb" shell getprop ro.product.model
 echo Производитель:
-adb\adb shell getprop ro.product.manufacturer
+"%~dp0adb\adb" shell getprop ro.product.manufacturer
 echo Версия Android:
-adb\adb shell getprop ro.build.version.release
+"%~dp0adb\adb" shell getprop ro.build.version.release
 echo Патч безопасности:
-adb\adb shell getprop ro.build.version.security_patch
+"%~dp0adb\adb" shell getprop ro.build.version.security_patch
 echo Серийный номер:
-adb\adb shell getprop ro.serialno
+"%~dp0adb\adb" shell getprop ro.serialno
 echo.
 
 echo --- ИНФОРМАЦИЯ О ПРОЦЕССОРЕ ---
 echo Архитектура:
-adb\adb shell getprop ro.product.cpu.abi
+"%~dp0adb\adb" shell getprop ro.product.cpu.abi
 echo Ядра:
-adb\adb shell cat /sys/devices/system/cpu/present
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/present
 echo Губернатор:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_governor
 echo Текущая частота:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/scaling_cur_freq
 echo Минимальная частота:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_min_freq
 echo Максимальная частота:
-adb\adb shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
+"%~dp0adb\adb" shell cat /sys/devices/system/cpu/cpu0/cpufreq/cpuinfo_max_freq
 echo.
 
 echo --- ТЕМПЕРАТУРА ---
 echo Температура батареи:
-adb\adb shell dumpsys battery | findstr "temperature"
+"%~dp0adb\adb" shell dumpsys battery | findstr "temperature"
 echo Температура процессора:
-adb\adb shell cat /sys/class/thermal/thermal_zone0/temp 2>nul
-adb\adb shell cat /sys/class/thermal/thermal_zone1/temp 2>nul
-adb\adb shell cat /sys/class/thermal/thermal_zone2/temp 2>nul
+"%~dp0adb\adb" shell cat /sys/class/thermal/thermal_zone0/temp 2>nul
+"%~dp0adb\adb" shell cat /sys/class/thermal/thermal_zone1/temp 2>nul
+"%~dp0adb\adb" shell cat /sys/class/thermal/thermal_zone2/temp 2>nul
 echo.
 
 echo --- ИНФОРМАЦИЯ О БАТАРЕЕ ---
 echo Уровень:
-adb\adb shell dumpsys battery | findstr "level"
+"%~dp0adb\adb" shell dumpsys battery | findstr "level"
 echo Максимальный уровень:
-adb\adb shell dumpsys battery | findstr "scale"
+"%~dp0adb\adb" shell dumpsys battery | findstr "scale"
 echo Статус:
-adb\adb shell dumpsys battery | findstr "status"
+"%~dp0adb\adb" shell dumpsys battery | findstr "status"
 echo Здоровье:
-adb\adb shell dumpsys battery | findstr "health"
+"%~dp0adb\adb" shell dumpsys battery | findstr "health"
 echo Наличие:
-adb\adb shell dumpsys battery | findstr "present"
+"%~dp0adb\adb" shell dumpsys battery | findstr "present"
 echo Напряжение:
-adb\adb shell dumpsys battery | findstr "voltage"
+"%~dp0adb\adb" shell dumpsys battery | findstr "voltage"
 echo Технология:
-adb\adb shell dumpsys battery | findstr "technology"
+"%~dp0adb\adb" shell dumpsys battery | findstr "technology"
 echo Зарядка от сети:
-adb\adb shell dumpsys battery | findstr "AC powered"
+"%~dp0adb\adb" shell dumpsys battery | findstr "AC powered"
 echo Зарядка от USB:
-adb\adb shell dumpsys battery | findstr "USB powered"
+"%~dp0adb\adb" shell dumpsys battery | findstr "USB powered"
 echo Беспроводная зарядка:
-adb\adb shell dumpsys battery | findstr "Wireless powered"
+"%~dp0adb\adb" shell dumpsys battery | findstr "Wireless powered"
 echo.
 
 echo --- ИНФОРМАЦИЯ О ПАМЯТИ (RAM) ---
 echo Всего RAM:
-adb\adb shell free -h | findstr "Mem:"
-adb\adb shell dumpsys meminfo | findstr "Total RAM"
+"%~dp0adb\adb" shell free -h | findstr "Mem:"
+"%~dp0adb\adb" shell dumpsys meminfo | findstr "Total RAM"
 echo Доступно RAM:
-adb\adb shell dumpsys meminfo | findstr "Free RAM"
+"%~dp0adb\adb" shell dumpsys meminfo | findstr "Free RAM"
 echo.
 
 echo --- ИНФОРМАЦИЯ О ХРАНИЛИЩЕ ---
 echo Внутренняя память:
-adb\adb shell df -h /data
+"%~dp0adb\adb" shell df -h /data
 echo Системная память:
-adb\adb shell df -h /system
+"%~dp0adb\adb" shell df -h /system
 echo Кэш:
-adb\adb shell df -h /cache
+"%~dp0adb\adb" shell df -h /cache
 echo.
 
 echo --- ИНФОРМАЦИЯ О ДИСПЛЕЕ ---
 echo Разрешение:
-adb\adb shell wm size
+"%~dp0adb\adb" shell wm size
 echo Плотность:
-adb\adb shell wm density
+"%~dp0adb\adb" shell wm density
 echo.
 
 echo --- ИНФОРМАЦИЯ О СЕТИ ---
 echo Wi-Fi SSID:
-adb\adb shell dumpsys wifi | findstr "SSID"
+"%~dp0adb\adb" shell dumpsys wifi | findstr "SSID"
 echo Сигнал Wi-Fi:
-adb\adb shell dumpsys wifi | findstr "signalStrength"
+"%~dp0adb\adb" shell dumpsys wifi | findstr "signalStrength"
 echo IP-адрес:
-adb\adb shell ip -f inet addr show wlan0
+"%~dp0adb\adb" shell ip -f inet addr show wlan0
 echo MAC-адрес:
-adb\adb shell cat /sys/class/net/wlan0/address
+"%~dp0adb\adb" shell cat /sys/class/net/wlan0/address
 echo.
 
 echo --- ИНФОРМАЦИЯ О BLUETOOTH ---
 echo Статус Bluetooth:
-adb\adb shell settings get global bluetooth_on
+"%~dp0adb\adb" shell settings get global bluetooth_on
 echo.
 
-echo --- СТАТУС СИСТЕМЫ ---
+echo --- СТАТУС СИСТEMЫ ---
 echo Статус загрузчика:
-adb\adb shell getprop ro.boot.flash.locked
+"%~dp0adb\adb" shell getprop ro.boot.flash.locked
 echo USB-отладка:
-adb\adb shell settings get global adb_enabled
+"%~dp0adb\adb" shell settings get global adb_enabled
 echo Root доступ:
-adb\adb shell su -c "echo Root доступен" 2>nul
+"%~dp0adb\adb" shell su -c "echo Root доступен" 2>nul
 if errorlevel 1 echo Нет root доступа
 echo.
 
 echo --- ДАТЧИКИ ---
 echo Акселерометр:
-adb\adb shell dumpsys sensorservice | findstr "Accelerometer"
+"%~dp0adb\adb" shell dumpsys sensorservice | findstr "Accelerometer"
 echo Гироскоп:
-adb\adb shell dumpsys sensorservice | findstr "Gyroscope"
+"%~dp0adb\adb" shell dumpsys sensorservice | findstr "Gyroscope"
 echo.
 
 echo --- ИНФОРМАЦИЯ О КАМЕРЕ ---
 echo Количество камер:
-adb\adb shell dumpsys media.camera | findstr "Number of cameras"
+"%~dp0adb\adb" shell dumpsys media.camera | findstr "Number of cameras"
 echo.
 
 echo --- ИНФОРМАЦИЯ О ЗВУКЕ ---
 echo Статус аудио:
-adb\adb shell dumpsys audio | findstr "mIsConnected"
+"%~dp0adb\adb" shell dumpsys audio | findstr "mIsConnected"
 echo.
 
 echo =============================================
@@ -750,3 +764,50 @@ echo =============================================
 echo.
 pause
 goto menu
+
+:battery_history
+cls
+echo.
+echo =============================================
+echo          ИСТОРИЯ БАТАРЕИ
+echo =============================================
+echo.
+echo Загрузка истории батареи...
+echo.
+"%~dp0adb\adb" shell dumpsys batterystats
+echo.
+pause
+goto menu
+
+:running_processes
+cls
+echo.
+echo =============================================
+echo          АКТИВНЫЕ ПРОЦЕССЫ
+echo =============================================
+echo.
+echo Список активных процессов:
+echo.
+"%~dp0adb\adb" shell top -n 1
+color 0A
+echo.
+pause
+goto menu
+
+:exit_cleanup
+cls
+echo.
+echo =============================================
+echo          ВЫХОД ИЗ ПРОГРАММЫ
+echo =============================================
+echo.
+echo Очистка временных файлов...
+if exist "temp\*.*" (
+    echo Удаление файлов из папки temp...
+    del /q temp\*.* 2>nul
+    echo Готово.
+)
+echo.
+echo Выход из Device Tool V2.1...
+timeout /t 2 >nul
+exit
